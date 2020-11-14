@@ -56,7 +56,12 @@ void BOARD_InitBootClocks(void)
 name: BOARD_BootClockRUN
 called_from_default_init: true
 outputs:
-- {id: System_clock.outFreq, value: 12 MHz}
+- {id: System_clock.outFreq, value: 96 MHz}
+settings:
+- {id: ANALOG_CONTROL_FRO192M_CTRL_ENDI_FRO_96M_CFG, value: Enable}
+- {id: SYSCON.MAINCLKSELA.sel, value: ANACTRL.fro_hf_clk}
+sources:
+- {id: ANACTRL.fro_hf.outFreq, value: 96 MHz}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -75,8 +80,10 @@ void BOARD_BootClockRUN(void)
     CLOCK_SetupFROClocking(12000000U);                   /*!< Set up FRO to the 12 MHz, just for sure */
     CLOCK_AttachClk(kFRO12M_to_MAIN_CLK);                /*!< Switch to FRO 12MHz first to ensure we can change the clock setting */
 
-    POWER_SetVoltageForFreq(12000000U);                  /*!< Set voltage for the one of the fastest clock outputs: System clock output */
-    CLOCK_SetFLASHAccessCyclesForFreq(12000000U);          /*!< Set FLASH wait states for core */
+    CLOCK_SetupFROClocking(96000000U);                   /* Enable FRO HF(96MHz) output */
+
+    POWER_SetVoltageForFreq(96000000U);                  /*!< Set voltage for the one of the fastest clock outputs: System clock output */
+    CLOCK_SetFLASHAccessCyclesForFreq(96000000U);          /*!< Set FLASH wait states for core */
 
     /*!< Set up dividers */
     CLOCK_SetClkDiv(kCLOCK_DivArmTrClkDiv, 0U, true);               /*!< Reset TRACECLKDIV divider counter and halt it */
@@ -86,9 +93,11 @@ void BOARD_BootClockRUN(void)
     CLOCK_SetClkDiv(kCLOCK_DivAhbClk, 1U, false);         /*!< Set AHBCLKDIV divider to value 1 */
     CLOCK_SetClkDiv(kCLOCK_DivAhbClk, 0U, true);               /*!< Reset AHBCLKDIV divider counter and halt it */
     CLOCK_SetClkDiv(kCLOCK_DivAhbClk, 1U, false);         /*!< Set AHBCLKDIV divider to value 1 */
+    CLOCK_SetClkDiv(kCLOCK_DivFrohfClk, 0U, true);               /*!< Reset FROHFDIV divider counter and halt it */
+    CLOCK_SetClkDiv(kCLOCK_DivFrohfClk, 1U, false);         /*!< Set FROHFDIV divider to value 1 */
 
     /*!< Set up clock selectors - Attach clocks to the peripheries */
-    CLOCK_AttachClk(kFRO12M_to_MAIN_CLK);                 /*!< Switch MAIN_CLK to FRO12M */
+    CLOCK_AttachClk(kFRO_HF_to_MAIN_CLK);                 /*!< Switch MAIN_CLK to FRO_HF */
 
     /*< Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKRUN_CORE_CLOCK;

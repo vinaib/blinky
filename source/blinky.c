@@ -38,6 +38,7 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "LPC55S28.h"
+#include "fsl_gpio.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
@@ -55,11 +56,50 @@ int main(void) {
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
+    int j;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
         i++ ;
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
+
+        /* Turn on */
+        GPIO_PortClear(BOARD_INITPINS_BLUE_GPIO,
+                BOARD_INITPINS_BLUE_PORT,
+                BOARD_INITPINS_BLUE_PIN_MASK);
+
+        for(j=0;j<9999999;j++);
+
+         GPIO_PortSet(BOARD_INITPINS_BLUE_GPIO,
+                BOARD_INITPINS_BLUE_PORT,
+                BOARD_INITPINS_BLUE_PIN_MASK);
+
+         for(j=0;j<9999999;j++);
+
+         GPIO_PortClear(BOARD_INITPINS_RED_GPIO,
+                BOARD_INITPINS_RED_PORT,
+                BOARD_INITPINS_RED_PIN_MASK);
+
+         for(j=0;j<9999999;j++);
+
+         GPIO_PortSet(BOARD_INITPINS_RED_GPIO,
+                BOARD_INITPINS_RED_PORT,
+                BOARD_INITPINS_RED_PIN_MASK);
+
+         for(j=0;j<9999999;j++);
+
+         GPIO_PortClear(BOARD_INITPINS_GREEN_GPIO,
+                BOARD_INITPINS_GREEN_PORT,
+                BOARD_INITPINS_GREEN_PIN_MASK);
+
+         for(j=0;j<9999999;j++);
+
+         GPIO_PortSet(BOARD_INITPINS_GREEN_GPIO,
+                BOARD_INITPINS_GREEN_PORT,
+                BOARD_INITPINS_GREEN_PIN_MASK);
+
+         for(j=0;j<9999999;j++);
+
         __asm volatile ("nop");
     }
     return 0 ;
